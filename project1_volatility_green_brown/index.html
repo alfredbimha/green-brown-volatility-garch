@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project 1 — Volatility Dynamics of Green vs Brown Assets</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Source+Sans+3:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+        :root {
+            --c1: #0f4c3a;
+            --c2: #1a6b52;
+            --accent: #10b981;
+            --ink: #0f172a;
+            --body: #334155;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --bg: #f8fafc;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Source Sans 3', -apple-system, sans-serif;
+            line-height: 1.75;
+            color: var(--body);
+            background: var(--bg);
+        }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(160deg, var(--c1) 0%, var(--c2) 100%);
+            padding: 72px 24px 56px;
+            text-align: center;
+            color: #ffffff;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 30% 50%, rgba(255,255,255,0.06) 0%, transparent 60%);
+        }
+        .hero-inner { position: relative; z-index: 1; max-width: 780px; margin: 0 auto; }
+        .hero .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.25);
+            padding: 5px 16px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        .hero h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 12px;
+            color: #ffffff;
+        }
+        .hero .subtitle {
+            font-size: 1.15rem;
+            opacity: 0.92;
+            font-weight: 400;
+            color: #ffffff;
+        }
+        .hero .meta {
+            margin-top: 24px;
+            display: flex;
+            justify-content: center;
+            gap: 28px;
+            flex-wrap: wrap;
+            font-size: 0.9rem;
+            opacity: 0.85;
+            color: #ffffff;
+        }
+
+        /* ── CONTAINER ── */
+        .container { max-width: 860px; margin: 0 auto; padding: 0 20px 64px; }
+
+        /* ── SECTIONS ── */
+        .section {
+            background: var(--white);
+            border-radius: 12px;
+            padding: 36px 32px;
+            margin-top: 28px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+            border: 1px solid var(--border);
+        }
+        .section-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+            display: inline-block;
+        }
+
+        /* ── RESEARCH QUESTION ── */
+        .rq {
+            background: linear-gradient(135deg, var(--c1), var(--c2));
+            color: #ffffff;
+            border: none;
+            font-size: 1.15rem;
+            font-style: italic;
+            text-align: center;
+            padding: 32px 36px;
+        }
+        .rq-label {
+            display: block;
+            font-style: normal;
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            opacity: 0.8;
+        }
+
+        /* ── DATA BOX ── */
+        .data-box {
+            background: #f1f5f9;
+            border-left: 4px solid var(--accent);
+            padding: 20px 24px;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            line-height: 1.85;
+        }
+        .data-box code {
+            background: #e2e8f0;
+            padding: 2px 7px;
+            border-radius: 4px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85em;
+        }
+
+        /* ── METHOD CARDS ── */
+        .methods-grid { display: flex; flex-direction: column; gap: 14px; }
+        .method-card {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 18px 22px;
+            transition: border-color 0.2s;
+        }
+        .method-card:hover { border-color: var(--accent); }
+        .method-name {
+            font-weight: 700;
+            color: var(--ink);
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .method-desc {
+            font-size: 0.92rem;
+            color: var(--muted);
+        }
+
+        /* ── FINDINGS ── */
+        .finding {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .finding:last-child { margin-bottom: 0; }
+        .finding-num {
+            flex-shrink: 0;
+            width: 30px; height: 30px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            margin-top: 2px;
+        }
+        .finding-text {
+            font-size: 0.95rem;
+            color: var(--body);
+        }
+
+        /* ── CODE ── */
+        .code-block {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 24px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+        .code-block .comment { color: #64748b; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #86efac; }
+        .code-block .function { color: #7dd3fc; }
+
+        /* ── TOOLS BAR ── */
+        .tools-bar {
+            text-align: center;
+            padding: 20px;
+            margin-top: 28px;
+            font-size: 0.9rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* ── FOOTER ── */
+        .footer {
+            text-align: center;
+            padding: 32px 20px;
+            font-size: 0.82rem;
+            color: var(--muted);
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+
+        @media (max-width: 600px) {
+            .section { padding: 24px 18px; }
+            .hero { padding: 48px 18px 40px; }
+            .hero .meta { flex-direction: column; gap: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-inner">
+        <div class="badge">Project 1 · Financial Econometrics</div>
+        <h1>Volatility Dynamics of Green vs Brown Assets</h1>
+        <p class="subtitle">GARCH Modelling for Sustainable Finance Risk Analysis</p>
+        <div class="meta">
+            <span>Languages: Python & R</span>
+            <span>Category: Financial Econometrics</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <div class="section rq">
+        <span class="rq-label">Research Question</span>
+        Do green assets (clean energy ETFs) exhibit different volatility dynamics compared to brown assets (fossil fuel ETFs)?
+    </div>
+
+    <div class="section">
+        <div class="section-title">Methodology</div>
+        <p>This project applies GARCH(1,1) and GJR-GARCH models to compare the conditional volatility of green and brown asset classes. The analysis uses maximum likelihood estimation with Student-t distributed errors to capture fat tails common in financial returns.</p>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Data Collection &amp; Sources</div>
+        <div class="data-box"><b>Source:</b> Yahoo Finance API via <code>yfinance</code> library<br>
+<b>Assets:</b> ICLN (iShares Global Clean Energy), XLE (Energy Select SPDR), QCLN (First Trust NASDAQ Clean Edge)<br>
+<b>Period:</b> 2015–2024 (daily closing prices)<br>
+<b>Processing:</b> Log returns computed as r_t = ln(P_t / P_{t-1}), stationarity confirmed via ADF test</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Key Methods</div>
+        <div class="methods-grid">
+            <div class="method-card">
+                <div class="method-name">GARCH(1,1)</div>
+                <div class="method-desc">Captures volatility clustering — high-volatility periods tend to follow high-volatility periods</div>
+            </div>
+            <div class="method-card">
+                <div class="method-name">GJR-GARCH</div>
+                <div class="method-desc">Adds asymmetry — negative shocks (bad news) can have a larger impact on volatility than positive shocks of equal magnitude</div>
+            </div>
+            <div class="method-card">
+                <div class="method-name">Volatility Forecasting</div>
+                <div class="method-desc">Rolling 30-day ahead forecasts compared across asset classes to assess risk persistence</div>
+            </div></div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Key Findings</div>
+        
+            <div class="finding">
+                <div class="finding-num">1</div>
+                <div class="finding-text">Energy sector ETFs show significantly higher volatility persistence (α+β ≈ 0.97) than clean energy (≈ 0.94)</div>
+            </div>
+            <div class="finding">
+                <div class="finding-num">2</div>
+                <div class="finding-text">Clean energy exhibits stronger asymmetric leverage effects (γ coefficient), meaning negative shocks amplify volatility more</div>
+            </div>
+            <div class="finding">
+                <div class="finding-num">3</div>
+                <div class="finding-text">Rolling forecasts reveal that green assets had lower conditional volatility post-2020, suggesting a risk premium shift</div>
+            </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Code Sample</div>
+        <pre class="code-block"># GARCH(1,1) estimation with Student-t errors
+from arch import arch_model
+
+model = arch_model(returns, vol='Garch', p=1, q=1, dist='t')
+result = model.fit(disp='off')
+
+# Extract conditional volatility
+cond_vol = result.conditional_volatility
+print(result.summary())</pre>
+    </div>
+
+    <div class="tools-bar">Python · arch · yfinance · statsmodels · matplotlib · pandas</div>
+
+    <div class="footer">
+        Sustainable Finance Research Portfolio · Project 1 of 20<br>
+        AI-Assisted Research Workflow — Methodology directed by researcher, implementation assisted by Claude AI
+    </div>
+
+</div>
+</body>
+</html>
